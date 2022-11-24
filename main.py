@@ -25,29 +25,22 @@ if __name__ == "__main__":
     keep_going = True
     th.Thread(target=key_capture_thread, args=(), name='key_capture_thread', daemon=True).start()
 
-
     def checkmailLoop(credentials):
         progress = 0
         imapConnection = mailActions.open_connection(credentials)
         while keep_going:
-            try:
-                progressBar = ("/", "\\")
-                messages = mailActions.getMail(imapConnection)
+            progressBar = ("/", "\\")
+            messages = mailActions.getMail(imapConnection)
 
-                for activeEmail in messages:
-                    to = activeEmail["From"]
-                    newMail = messageParsing.parse(activeEmail["Body"])
-                    mailActions.sendMail(credentials, to, newMail.subject, newMail.body)
-                    print("Mail Found, Processing")
+            for activeEmail in messages:
+                to = activeEmail["From"]
+                newMail = messageParsing.parse(activeEmail["Body"])
+                mailActions.sendMail(credentials, to, newMail.subject, newMail.body)
+                print("Mail Found, Processing")
 
-                print("Checking Mail " + progressBar[progress])
-                if progress < 1:
-                    progress += 1
-                else:
-                    progress = 0
-                time.sleep(10)
-            except:
-                continue
-
+            print("Checking Mail " + progressBar[progress])
+            if progress < 1: progress += 1
+            else: progress = 0
+            time.sleep(10)
 
     checkmailLoop(getCredentials())
